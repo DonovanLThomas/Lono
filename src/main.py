@@ -11,7 +11,6 @@ def main():
   messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
   while True:
-    print(messages)
     user_input = input("\nYou: ")
 
     if user_input.lower() in ["exit", "quit"]:
@@ -34,6 +33,10 @@ def main():
     except ResponseError as error:
       messages.pop()
       print(f"{error.status_code}, {error.error}")
+      continue
+    except ValueError as error:
+      messages.pop()
+      print(error)
       continue
     else:
       messages.append({"role": "assistant", "content": response})
