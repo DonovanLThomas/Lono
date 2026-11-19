@@ -6,9 +6,10 @@ from .storage import insert_note, list_notes
 
 
 def get_current_time() -> str:
-    """Return the current date and time in America/Los_Angeles as an ISO timestamp with a UTC offset. Takes no arguments."""
+    """Return a short current-time sentence in America/Los_Angeles."""
     now = datetime.now(ZoneInfo("America/Los_Angeles"))
-    return now.isoformat()
+    display_time = now.strftime("%I:%M %p").lstrip("0")
+    return f"The time is {display_time}."
 
 
 def validate_task_title(title: str) -> str:
@@ -55,7 +56,10 @@ CURRENT_TIME_TOOL = {
     "type": "function",
     "function": {
         "name": "get_current_time",
-        "description": "Current date and time. Timezone is fixed; call with no arguments.",
+        "description": (
+            "Return only a short current-time sentence in the user's configured "
+            "timezone. Call with no arguments."
+        ),
         "parameters": {
             "type": "object",
             "properties": {},
@@ -124,6 +128,7 @@ TOOLS_REGISTRY = {
     "get_current_time": {
         "schema": CURRENT_TIME_TOOL,
         "handler": get_current_time,
+        "direct_return": True,
     },
     "save_note": {
         "schema": SAVE_NOTE_TOOL,

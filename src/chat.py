@@ -59,6 +59,9 @@ class LlamaChat:
         }
       )
 
+    if entry.get("direct_return", False):
+      return result
+
     mess_copy.append({"role": "tool", "content": result})
     response = chat(
         model=OLLAMA_MODEL,
