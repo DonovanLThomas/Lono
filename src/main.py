@@ -2,11 +2,11 @@ from src.chat import LlamaChat
 from httpx import ConnectError
 from ollama import ResponseError
 from .config import SYSTEM_PROMPT, HISTORY_LIMIT
-import unittest
+from .storage import initialize_database
 
 def main():
   print("Llama LLM Chat - Type 'exit' to quit.")
-
+  initialize_database()
   chat = LlamaChat()
   messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 

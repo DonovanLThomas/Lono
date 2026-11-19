@@ -23,30 +23,26 @@ class LlamaChat:
     
     tools_util = response.message.tool_calls
     if len(tools_util) != 1:
-      raise ValueError
+      raise ValueError(
+        f"Expected one tool call, received {len(tools_util)}"
+      )
 
     call = tools_util[0]
     entry = TOOLS_REGISTRY.get(call.function.name)
 
     if entry is None:
       raise ValueError(
-        f"Invalid tool request: name={entry.function.name!r}"
-      )
-    if (call.function.arguments):
-      raise ValueError(
-        f"Unexpected arguments for {call.function.name!r}: "
-        f"{call.function.arguments!r}"
+        f"Invalid tool request: name={call.function.name!r}"
       )
     
+    arguments = dict(call.function.arguments or {})
 
     mess_copy.append(response.message.model_dump(exclude_none=True))
-    result = entry["handler"]()
-    print("using tool")
+    result = entry["handler"](**arguments)
     mess_copy.append({"role": "tool", "content": result})
     response = chat(
         model=OLLAMA_MODEL,
         messages=mess_copy,
     )
-    print(mess_copy)
 
     return response.message.content

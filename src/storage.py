@@ -46,6 +46,7 @@ def initialize_database() -> None:
         
     finally:
         connection.close()
+
     
 def insert_task(title: str) -> int:
     connection = sqlite3.connect(DB_PATH)
@@ -179,3 +180,47 @@ def get_note(note_id: int) -> dict | None:
     finally:
         connection.close()
 
+def list_notes() -> list[dict]:
+    connection = sqlite3.connect(DB_PATH)
+
+    try:
+        note_rows = connection.execute(
+            """
+            SELECT id, raw_text, created_at
+            FROM notes
+            ORDER BY created_at DESC, id DESC
+            """
+        ).fetchall()
+
+        item_rows = connection.execute(
+            """
+            SELECT note_id, body
+            FROM note_items
+            ORDER BY note_id, position
+            """
+        ).fetchall()
+
+        bullets_by_note = {}
+
+        for note_id, body in item_rows:
+            if note_id not in bullets_by_note:
+                bullets_by_note[note_id] = []
+
+            bullets_by_note[note_id].append(body)
+
+        notes = []
+
+        for note_id, raw_text, created_at in note_rows:
+            notes.append(
+                {
+                    "id": note_id,
+                    "raw_text": raw_text,
+                    "created_at": created_at,
+                    "bullets": bullets_by_note.get(note_id, []),
+                }
+            )
+
+        return notes
+
+    finally:
+        connection.close()
