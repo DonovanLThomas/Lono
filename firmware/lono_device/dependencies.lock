@@ -16,7 +16,7 @@ dependencies:
       require: private
       version: '>=4.0'
     source:
-      registry_url: https://components.espressif.com
+      registry_url: https://components.espressif.com/
       type: service
     version: 1.5.11
   espressif/esp_io_expander:
@@ -159,9 +159,10 @@ dependencies:
     - esp32s3
     version: 2.0.0
 direct_dependencies:
+- espressif/esp_codec_dev
 - idf
 - lvgl/lvgl
 - waveshare/esp32_s3_touch_lcd_1_83
-manifest_hash: 41e01886caf0b720b2cf4f773308b70be594d2cf007f44cddf786ad6a1c41780
+manifest_hash: 631f6f54fb7a71645cdd73c113f22e74f2f6b61b4c5999c9216dc22b3d18ba36
 target: esp32s3
 version: 2.0.0

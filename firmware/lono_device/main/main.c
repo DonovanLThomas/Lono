@@ -1,15 +1,8 @@
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "nvs_flash.h"
-#include "nvs.h"
-#include "esp_log.h"
-#include "esp_err.h"
-#include "esp_check.h"
-#include "esp_memory_utils.h"
 #include "lvgl.h"
 #include "bsp/esp-bsp.h"
 #include "bsp/display.h"
-#include "lv_demos.h"
+#include "app_audio.h"
+#include "esp_err.h"
 
 
 static void status_button_event_cb(lv_event_t *event){
@@ -24,8 +17,8 @@ static void create_lono_ui(void){
     lv_obj_t *status_label = lv_label_create(screen);
     lv_label_set_text(title, "Lono");
     lv_label_set_text(status_label, "Ready");
-    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 30);
-    lv_obj_align(title, LV_ALIGN_CENTER, 50, 50);
+    lv_obj_align(status_label, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_align(title, LV_ALIGN_CENTER, 0, 30);
 
     lv_obj_t *button = lv_button_create(screen);
     lv_obj_set_size(button, 160, 50);
@@ -50,4 +43,6 @@ void app_main(void)
     bsp_display_lock(0);
     create_lono_ui();
     bsp_display_unlock();
+    ESP_ERROR_CHECK(app_audio_init());
+    ESP_ERROR_CHECK(app_audio_play_test_tone());
 }
