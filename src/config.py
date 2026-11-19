@@ -4,6 +4,7 @@ import os
 load_dotenv()
 
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen3:1.7b")
+OLLAMA_KEEP_ALIVE = os.getenv("OLLAMA_KEEP_ALIVE", "30m")
 
 SYSTEM_PROMPT = (
     "You are an AI assistant named Lono. "

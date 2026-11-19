@@ -5,9 +5,20 @@ from .config import SYSTEM_PROMPT, HISTORY_LIMIT
 from .storage import initialize_database
 
 def main():
-  print("Llama LLM Chat - Type 'exit' to quit.")
+  print("Waking Lono...")
   initialize_database()
   chat = LlamaChat()
+
+  try:
+    chat.warm_up()
+  except ConnectError:
+    print("Lono could not connect to Ollama.")
+    return
+  except ResponseError as error:
+    print(f"Model startup failed: {error.status_code}, {error.error}")
+    return
+
+  print("Lono is ready. Type 'exit' to quit.")
   messages = [{"role": "system", "content": SYSTEM_PROMPT}]
 
   while True:

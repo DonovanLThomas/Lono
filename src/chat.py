@@ -1,19 +1,28 @@
-from ollama import chat
+from ollama import chat, generate
 from .tools import TOOLS_REGISTRY
 from .config import (
-  OLLAMA_MODEL
+  OLLAMA_KEEP_ALIVE,
+  OLLAMA_MODEL,
 )
 tools = []
 for tool in TOOLS_REGISTRY.values():
   tools.append(tool["schema"])
 
 class LlamaChat:
+  def warm_up(self):
+    generate(
+      model=OLLAMA_MODEL,
+      prompt="",
+      keep_alive=OLLAMA_KEEP_ALIVE,
+    )
+
   def get_response(self, messages):
     mess_copy = messages.copy()
     response = chat(
         model=OLLAMA_MODEL,
         messages=mess_copy,
-        tools=tools
+        tools=tools,
+        keep_alive=OLLAMA_KEEP_ALIVE,
     )
 
     if not response.message.tool_calls:
@@ -43,6 +52,7 @@ class LlamaChat:
     response = chat(
         model=OLLAMA_MODEL,
         messages=mess_copy,
+        keep_alive=OLLAMA_KEEP_ALIVE,
     )
 
     return response.message.content
