@@ -26,7 +26,10 @@ def validate_task_title(title: str) -> str:
     return title
 
 
-def save_note(raw_text: str, bullets: list[str]) -> str:
+def save_note(raw_text: str, bullets: list[str] | None = None) -> str:
+    if not bullets:
+        bullets = [raw_text]
+
     note_id = insert_note(raw_text, bullets)
 
     return json.dumps(
@@ -111,7 +114,7 @@ SAVE_NOTE_TOOL = {
                     "minItems": 1,
                 },
             },
-            "required": ["raw_text", "bullets"],
+            "required": ["raw_text"],
             "additionalProperties": False,
         },
     },

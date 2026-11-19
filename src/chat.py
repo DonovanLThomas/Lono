@@ -1,3 +1,5 @@
+import json
+
 from ollama import chat, generate
 from .tools import TOOLS_REGISTRY
 from .config import (
@@ -47,7 +49,16 @@ class LlamaChat:
     arguments = dict(call.function.arguments or {})
 
     mess_copy.append(response.message.model_dump(exclude_none=True))
-    result = entry["handler"](**arguments)
+    try:
+      result = entry["handler"](**arguments)
+    except (TypeError, ValueError) as error:
+      result = json.dumps(
+        {
+          "status": "error",
+          "message": str(error),
+        }
+      )
+
     mess_copy.append({"role": "tool", "content": result})
     response = chat(
         model=OLLAMA_MODEL,
