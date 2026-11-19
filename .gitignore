@@ -14,10 +14,13 @@ dist/
 # Environment variables and secrets
 .env
 .env.*
-pyproject.toml
 .aws/
 .codex/
 .agents/
+google_credentials.json
+google_token.json
+/credentials.json
+/token.json
 
 # Local runtime data
 lono.db

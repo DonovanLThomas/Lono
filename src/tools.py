@@ -2,12 +2,14 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 import json
 
+from .config import GOOGLE_TIMEZONE
+from .google_services import get_recent_emails, get_upcoming_events
 from .storage import insert_note, list_notes
 
 
 def get_current_time() -> str:
-    """Return a short current-time sentence in America/Los_Angeles."""
-    now = datetime.now(ZoneInfo("America/Los_Angeles"))
+    """Return a short current-time sentence in the configured timezone."""
+    now = datetime.now(ZoneInfo(GOOGLE_TIMEZONE))
     display_time = now.strftime("%I:%M %p").lstrip("0")
     return f"The time is {display_time}."
 
@@ -52,6 +54,32 @@ def get_saved_notes() -> str:
     )
 
 
+def get_daily_brief() -> str:
+    try:
+        emails = get_recent_emails(hours=24, limit=10)
+        events = get_upcoming_events(hours=48, limit=20)
+    except RuntimeError as error:
+        return json.dumps(
+            {
+                "status": "error",
+                "message": str(error),
+            }
+        )
+
+    return json.dumps(
+        {
+            "status": "success",
+            "timezone": GOOGLE_TIMEZONE,
+            "window": {
+                "email_hours": 24,
+                "calendar_hours": 48,
+            },
+            "emails": emails,
+            "calendar_events": events,
+        }
+    )
+
+
 CURRENT_TIME_TOOL = {
     "type": "function",
     "function": {
@@ -59,6 +87,25 @@ CURRENT_TIME_TOOL = {
         "description": (
             "Return only a short current-time sentence in the user's configured "
             "timezone. Call with no arguments."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": False,
+        },
+    },
+}
+
+DAILY_BRIEF_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_daily_brief",
+        "description": (
+            "Read recent Gmail inbox metadata and upcoming Google Calendar events "
+            "to prepare a concise schedule briefing. Use when the user asks what "
+            "is coming up, what is on their schedule, for a daily brief, or to "
+            "review recent email alongside calendar events. This tool is read-only."
         ),
         "parameters": {
             "type": "object",
@@ -137,5 +184,9 @@ TOOLS_REGISTRY = {
     "list_notes": {
         "schema": LIST_NOTES_TOOL,
         "handler": get_saved_notes,
+    },
+    "get_daily_brief": {
+        "schema": DAILY_BRIEF_TOOL,
+        "handler": get_daily_brief,
     },
 }
