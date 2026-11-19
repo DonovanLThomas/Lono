@@ -15,7 +15,21 @@ dist/
 .env
 .env.*
 pyproject.toml
+.aws/
+.codex/
+.agents/
+
+# Local runtime data
+lono.db
+*.db-journal
+*.db-shm
+*.db-wal
 
 # Editor settings
 .vscode/
 .idea/
+
+# ESP-IDF generated and machine-local files
+managed_components/
+sdkconfig
+sdkconfig.old
