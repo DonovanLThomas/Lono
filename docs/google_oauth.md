@@ -19,8 +19,11 @@ It cannot send email or modify calendar events.
 
 The first `get_daily_brief` call prints a Google consent URL in the terminal.
 Open that URL in a browser, choose the account, and approve read-only access.
-After Google redirects to the temporary local callback, Lono stores the result
-as `google_token.json`. Both files are ignored by Git. The token file is written
+The browser may then report that `localhost` refused to connect. This is
+expected when the browser and Lono run in different environments. Copy the
+complete `localhost` URL from the browser address bar and paste it at Lono's
+terminal prompt. Lono exchanges the authorization code and stores the result as
+`google_token.json`. Both files are ignored by Git. The token file is written
 with owner-only permissions.
 
 The paths can be overridden in `.env`:

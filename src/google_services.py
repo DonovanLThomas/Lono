@@ -58,16 +58,47 @@ def _load_credentials():
             GOOGLE_CREDENTIALS_PATH,
             GOOGLE_SCOPES,
         )
-        credentials = flow.run_local_server(
-            port=0,
-            open_browser=False,
-            authorization_prompt_message=(
-                "\nOpen this URL in a browser to authorize Lono:\n{url}\n"
-            ),
-            success_message=(
-                "Lono authorization is complete. You may close this tab."
-            ),
+        flow.redirect_uri = "http://localhost:8765/"
+        authorization_url, _ = flow.authorization_url(access_type="offline")
+
+        print("\nOpen this URL in a browser to authorize Lono:")
+        print(authorization_url)
+        print(
+            "\nAfter approval, the browser may say localhost refused to "
+            "connect. Copy the complete URL from the browser address bar."
         )
+
+        try:
+            authorization_response = input(
+                "Paste the complete localhost URL here: "
+            ).strip()
+        except EOFError as error:
+            raise RuntimeError(
+                "Google authorization needs an interactive terminal."
+            ) from error
+
+        if not authorization_response:
+            raise RuntimeError(
+                "Google authorization was cancelled because no callback URL "
+                "was provided."
+            )
+
+        if authorization_response.startswith("http://"):
+            authorization_response = authorization_response.replace(
+                "http://",
+                "https://",
+                1,
+            )
+
+        try:
+            flow.fetch_token(authorization_response=authorization_response)
+        except Exception as error:
+            raise RuntimeError(
+                "Google authorization failed. Retry and paste the complete "
+                "localhost URL from the browser address bar."
+            ) from error
+
+        credentials = flow.credentials
 
     GOOGLE_TOKEN_PATH.parent.mkdir(parents=True, exist_ok=True)
     GOOGLE_TOKEN_PATH.write_text(credentials.to_json(), encoding="utf-8")
