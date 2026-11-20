@@ -17,9 +17,11 @@ It cannot send email or modify calendar events.
 5. Download the client JSON to the repository root as
    `google_credentials.json`.
 
-The first `get_daily_brief` call opens the Google consent flow and stores the
-resulting token as `google_token.json`. Both files are ignored by Git. The token
-file is written with owner-only permissions.
+The first `get_daily_brief` call prints a Google consent URL in the terminal.
+Open that URL in a browser, choose the account, and approve read-only access.
+After Google redirects to the temporary local callback, Lono stores the result
+as `google_token.json`. Both files are ignored by Git. The token file is written
+with owner-only permissions.
 
 The paths can be overridden in `.env`:
 

@@ -58,7 +58,16 @@ def _load_credentials():
             GOOGLE_CREDENTIALS_PATH,
             GOOGLE_SCOPES,
         )
-        credentials = flow.run_local_server(port=0)
+        credentials = flow.run_local_server(
+            port=0,
+            open_browser=False,
+            authorization_prompt_message=(
+                "\nOpen this URL in a browser to authorize Lono:\n{url}\n"
+            ),
+            success_message=(
+                "Lono authorization is complete. You may close this tab."
+            ),
+        )
 
     GOOGLE_TOKEN_PATH.parent.mkdir(parents=True, exist_ok=True)
     GOOGLE_TOKEN_PATH.write_text(credentials.to_json(), encoding="utf-8")
